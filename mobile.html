@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOD</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <script src="/javascripts/jquery.js"></script>
+    <script src="/javascripts/svg.js"></script>
+    <style>
+        html, body{
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .animate{
+            background-color: #000000;
+            z-index: 1000;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+            font-size: 60px;
+            line-height: 200px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+        }
+        .icon {
+            width: 1em;
+            height: 1em;
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            color: transparent;
+            cursor: pointer;
+        }
+
+        .icon-home {
+            background-image: url(/static/icon-home.svg);
+        }
+
+        .icon-home:hover {
+            background-image: url(/static/icon-home-active.svg);
+        }
+
+        .footer .icon{
+            position: absolute;
+            right: 60px;
+            top: 0;
+            z-index: 1000;
+            color: #000000;
+            margin: 6px;
+        }
+    </style>
+    <style id="portrait">
+        .page{
+            display: none;
+            left: 0;
+            right: 0;
+        }
+        .page:target{
+            display: block;
+        }
+    </style>
+    <style id="landscape">
+        .page#main{
+            left: 0;
+            width: 300px;
+        }
+        .page#communicate{
+            left: 300px;
+            right: 0;
+        }
+        .icon-back{
+            display: none;
+        }
+    </style>
+    <style id="tNormal"></style>
+    <style id="tCat">
+        body{
+            background-color: #ffffaa;
+        }
+        #chat>p>.chat-msg, #chat>p.mine>.chat-msg{
+            --color: #ffaa00;
+            padding: 13px;
+        }
+        #chat>p:not(.mine)>.chat-msg::after, #chat>p.mine>.chat-msg::before{
+            content: "";
+            display: block;
+            width: 30px;
+            height: 30px;
+            background-image: url(/static/cat.png);
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            position: absolute;
+            top: 0;
+            transform: translateY(-50%);
+        }
+        #chat>p:not(.mine)>.chat-msg::after{
+            right: -5px;
+        }
+        #chat>p.mine>.chat-msg::before{
+            left: -5px;
+        }
+    </style>
+    <style id="tNight">
+        .icon{
+            background-color: #ffffff33;
+        }
+        body{
+            background-color: #000033;
+            color: #ffffff;
+        }
+        #chat>p>.chat-msg{
+            --color: #666666;
+        }
+        #chat>p.mine>.chat-msg{
+            --color: #000088;
+        }
+        .header, .footer{
+            background-color: #000066;
+        }
+        .menu li{
+            background-color: #eeeeee66;
+            color: #ffffff;
+        }
+        .menu li.brand{
+            background-color: #00ffff66;
+        }
+    </style>
+    <script src="/fa.js"></script>
+</head>
+
+<body>
+
+    <div class="page" id="main">
+        <div class="header">
+            <span class="title">VOD私箱 1.4.0</span>
+        </div>
+        <div class="main">
+            <p style="opacity: 0.5">本页面由G9D <a href="javascript:null" data-href="/account.html?id=3" data-jump="new">Erhu</a>开发</p>
+            <h2><span class="icon icon-home" id="home">[主页]</span>聊天<a id="head" href="javascript:void(0)" data-href="/user.html" data-jump="new"></a></h2>
+            <div id="gangwei">
+                <select id="gselect" autofocus>
+                    <option value="">加载中......</option>
+                </select>
+            </div>
+            <ul>
+                <li class="highlight"><a id="msgs" title="验证消息">验证消息 & 系统消息</a></li>
+            </ul>
+            <p>用户列表：</p>
+            <ul>
+                <li style="cursor: pointer" data-uid="null"><a id="public" href="#communicate">公共聊天</a></li>
+            </ul>
+            <ul id="users">
+                <li id="load">正在加载...</li>
+            </ul>
+            <div class="gap"></div>
+            <p>我的小程序</p>
+            <div class="apps">
+                <div class="app" data-jump="new" data-href="/code-toys/"><img src="/static/dialog.svg"/><span>Code Toys</span></div>
+                <div class="app" data-jump="new" data-href="hstx.html"><img src="/static/hstx/home.png"/><span>函数图像</span></div>
+            </div>
+        </div>
+        <div class="footer">
+            <button onclick='setTheme("normal")'>白色主题</button>
+            <button onclick='setTheme("cat")'>猫猫模式</button>
+            <button onclick='setTheme("night")'>夜间主题</button>
+        </div>
+    </div>
+
+    <div class="page" id="communicate">
+        <div class="header">
+            <a id="apps" class="icon-more">
+                <i class="fa-solid fa-ellipsis"></i>
+            </a>
+            <a href="#main" id="back" class="icon-back"></a>
+            <span id="username" class="title"></span>
+        </div>
+        <div class="main" id="chat">
+            <span>
+                尊敬的用户，欢迎使用VOD！
+            </span>
+        </div>
+        <ul class="menu" id="actions">
+            <li id="menu_that" style="display: none;">
+                <a id="menu_that_a" data-jump="new">
+                    查看该用户信息
+                </a>
+            </li>
+            <li>
+                <a data-href="/user.html" data-jump="new">
+                    我自己的主页
+                </a>
+            </li>
+            <li class="brand">
+                <a data-href="/hstx.html" data-jump="new">
+                    函数图像生成器
+                </a>
+            </li>
+        </ul>
+        <div class="footer">
+                
+            <span class="icon" id="filetrans" title="文件快传">
+                <i class="fa-solid fa-file-export"></i>
+            </span>
+            <textarea value="" id="send" autocomplete="off" disabled></textarea>
+            <button style="width: 60px; position: absolute; right: 0; top: 0;" id="go">发送</button>
+        </div>
+    </div>
+    <div class="animate" id="animate">Loading.<br/>正在进入VOD</div>
+    <input type="file" id="filer" style="display: none;"/>
+
+    <script>
+        var themes = {
+            normal: $("style#tNormal"),
+            cat: $("style#tCat"),
+            night: $("style#tNight")
+        };
+        var setTheme = (function(){
+            var themesKeys = Object.keys(themes);
+            themesKeys.forEach(function(e){
+                themes[e].prop("disabled", true);
+            });
+            return function(theme){
+                themesKeys.forEach(function(e){
+                    if(e === theme)
+                        themes[e].prop("disabled", false);
+                    else
+                        themes[e].prop("disabled", true);
+                });
+            }
+        })();
+        setTheme("normal");
+        var portrait = document.getElementById("portrait");
+        var landscape = document.getElementById("landscape");
+        function hresize(){
+            var w = window.innerWidth, h = window.innerHeight;
+            portrait.disabled = !(h > w);
+            landscape.disabled = (h > w);
+        }
+        hresize();
+        window.addEventListener("resize", hresize);
+        window.addEventListener("DOMContentLoaded", function(){
+            $("#animate").delay(500).fadeOut(500);
+        });
+    </script>
+    <script>
+        document.documentElement.addEventListener("click", function(e){
+            var tgt = e.target.closest("[data-href]");
+            if(!tgt) return;
+            else window.location.href = tgt.dataset.href;
+        });
+    </script>
+</body>
+
+</html>
